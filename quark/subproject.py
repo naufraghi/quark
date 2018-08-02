@@ -236,7 +236,11 @@ class GitSubproject(Subproject):
     def checkout(self):
         fork(['git', 'clone', '-n', '--', self.url.geturl(), self.directory])
         with cd(self.directory):
-           fork(['git', 'checkout', self.ref])
+            try:
+                fork(['git', 'checkout', self.ref])
+            except CalledProcessError:
+                fork(['git', 'branch', '--remote'])
+                raise
 
     def update(self):
         if not exists(self.directory):
